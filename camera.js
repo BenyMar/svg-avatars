@@ -23,7 +23,7 @@ import dat from 'dat.gui';
 import Stats from 'stats.js';
 import "babel-polyfill";
 
-import {drawKeypoints, drawPoint, drawSkeleton, isMobile, toggleLoadingUI, setStatusText} from './utils/demoUtils';
+import {drawKeypoints, drawPoint, drawSkeleton, isMobile, toggleLoadingUI} from './utils/demoUtils';
 import {SVGUtils} from './utils/svgUtils'
 import {PoseIllustration} from './illustrationGen/illustration';
 import {Skeleton, facePartName2Index} from './illustrationGen/skeleton';
@@ -197,8 +197,8 @@ function detectPoseInRealTime(video) {
           drawSkeleton(keypoints, minPartConfidence, keypointCtx);
         }
       });
-      faceDetection.forEach(face => {
-        Object.values(facePartName2Index).forEach(index => {
+      faceDetection.forEach((face) => {
+        Object.values(facePartName2Index).forEach((index) => {
             let p = face.scaledMesh[index];
             drawPoint(keypointCtx, p[1], p[0], 2, 'red');
         });
@@ -261,7 +261,6 @@ export async function bindPage() {
   setupCanvas();
 
   toggleLoadingUI(true);
-  setStatusText('Loading PoseNet model...');
   posenet = await posenet_module.load({
     architecture: defaultPoseNetArchitecture,
     outputStride: defaultStride,
@@ -269,14 +268,11 @@ export async function bindPage() {
     multiplier: defaultMultiplier,
     quantBytes: defaultQuantBytes
   });
-  setStatusText('Loading FaceMesh model...');
   facemesh = await facemesh_module.load();
 
-  setStatusText('Loading Avatar file...');
   let t0 = new Date();
   await parseSVG(Object.values(avatarSvgs)[0]);
 
-  setStatusText('Setting up camera...');
   try {
     video = await loadVideo();
   } catch (e) {
@@ -288,7 +284,7 @@ export async function bindPage() {
   }
 
   setupGui([], posenet);
-  setupFPS();
+  //setupFPS();
   
   toggleLoadingUI(false);
   detectPoseInRealTime(video, posenet);
@@ -304,5 +300,5 @@ async function parseSVG(target) {
   illustration = new PoseIllustration(canvasScope);
   illustration.bindSkeleton(skeleton, svgScope);
 }
-    
+
 bindPage();
